@@ -1,4 +1,3 @@
-
 //Settings:
 var backgroundColor = "#000000";
 var elementColor = "#FFFFFF";
@@ -48,7 +47,6 @@ var Ball = function(height, width, startX, startY, boundX, boundY){
     this.boundX = boundX;
     this.boundY = boundY;
 };
-
 Ball.prototype.draw = function(canvasDrawer){
     //first clear the ball
     canvasDrawer.fillStyle = backgroundColor;
@@ -150,13 +148,84 @@ Ball.prototype.setK = function(inK){
     this.k = inK;
     this.calculatedXdY();
 };
+
+var Platform = function(height, width, startX, startY, boundY){
+    // This ball will be used to check if we have hit the ball and after that change it's coordinates. 
+    //this.balls = balls; //Maybe we will have multiple balls in the future...
+    
+    this.color = elementColor;
+    this.height = parseInt(height);
+    this.width = parseInt(width);
+    
+    //Where is the platform?
+    this.x = startX;
+    this.y = startY;
+    
+    //Not moving until we set a speed. Positive or negative value depending if we want to move up or down. 
+    this.velocity = 0;
+    
+    //Just like the ball, except we only can move up or down.
+    this.oldY = null;
+    this.boundY = boundY;
+};
+Platform.prototype.setVelocity = function(velocity){
+    this.velocity = velocity;
+}
+Platform.prototype.draw = function(canvasDrawer){
+    canvasDrawer.fillStyle = backgroundColor;
+    canvasDrawer.fillRect(parseInt(this.x), parseInt(this.oldY), this.width, this.height);
+    
+    canvasDrawer.fillStyle = this.color;
+    canvasDrawer.fillRect(parseInt(this.x), parseInt(this.y), this.width, this.height);
+}
+Platform.prototype.move = function(){
+    //Move if we are in bound
+    if((this.y > 0 && this.velocity < 0)||((this.y + this.height) < this.boundY && this.velocity > 0)){
+        this.oldY = this.y;
+        this.y = this.y + this.velocity
+    };
+}
+Platform.prototype.checkHitWithBall = function(ball){
+}
+
 var start = null;
 var ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
 
+var platform1 = new Platform(
+    30,             // Height
+    10,             // Width
+    30,             // StartX: 30px from right edge of canvas
+    height/2-15,    // Start in the middle on y-axis
+    canvas.height   // Only let it move so that we don't go outside of canvas
+);
+
+var platform2 = new Platform(
+    30,                 // Height
+    10,                 // Width
+    canvas.width - 40,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
+    height/2-15,        // Start in the middle on y-axis
+    canvas.height       // Only let it move so that we don't go outside of canvas)
+);
+
+var platforms = [platform1, platform2];
+platform1.setVelocity(0);
+platform2.setVelocity(0);
 var running = true;
 var step = function(timestamp){
     ball.draw(ctx);
-    ball.move();
+    ball.move();  
+    
+    // Move platforms and check if ball has hit platform
+    
+    platform1.draw(ctx);
+    platform1.move();
+    
+    platform2.draw(ctx);
+    platform2.move();
+    for(var i = 0; i < platforms.length; i++){
+        platforms[i].move()
+        platforms[i].checkHitWithBall(ball);
+    }
     
     if(running) window.requestAnimationFrame(step);
     
