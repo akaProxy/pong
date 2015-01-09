@@ -2,8 +2,9 @@
 var backgroundColor = "#000000";
 var elementColor = "#FFFFFF";
 var initialBallSpeed = 20; //How many px should we move per frame?
-var initialBallK = 3;
+var randomV = Math.random() * (Math.PI * 2);
 
+var initialBallK = Math.tan(randomV);
 
 var canvas = document.getElementById("arena");
 var height = window.innerHeight;
@@ -186,16 +187,27 @@ Platform.prototype.move = function(){
     };
 }
 Platform.prototype.checkHitWithBall = function(ball){
+    var x = ball.x;
+    var to = x + ball.width;
+    
+    var oldX = ball.oldX;
+    var oldTo = oldX + ball.width;
+    
+    var smallestX = Math.min(x, oldX);
+    var largestX = Math.max(x,oldX);
+    
+    // Has it passed one of the lines? 
+    if(smallestX<)
 }
 
 var start = null;
 var ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
 
 var platform1 = new Platform(
-    30,             // Height
+    100,             // Height
     10,             // Width
     30,             // StartX: 30px from right edge of canvas
-    height/2-15,    // Start in the middle on y-axis
+    height/2-50,    // Start in the middle on y-axis
     canvas.height   // Only let it move so that we don't go outside of canvas
 );
 
@@ -217,13 +229,15 @@ var step = function(timestamp){
     
     // Move platforms and check if ball has hit platform
     
-    platform1.draw(ctx);
+    /*platform1.draw(ctx);
     platform1.move();
     
     platform2.draw(ctx);
-    platform2.move();
+    platform2.move();*/
     for(var i = 0; i < platforms.length; i++){
+        platforms[i].draw(ctx);
         platforms[i].move()
+        
         platforms[i].checkHitWithBall(ball);
     }
     
@@ -232,8 +246,8 @@ var step = function(timestamp){
     //Very advanced system for detection of winner. Please be careful when you
     //uncomment this. It could lead to a broken toe, or worse, a 
     //pinple on your elbow. Please uncomment with cuation. 
-    
-    /*if(ball.centerX <= 0){
+    /*
+    if(ball.centerX <= 0){
         alert("alliansen vann!")
         running = false;
     }
