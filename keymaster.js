@@ -12,13 +12,13 @@ var key = function(){
                 
             case 38: 
             case 40: 
-                platform1.setVelocity(0);
+                platformR.setVelocity(0);
                 break;
 
             //Spelare 2:
             case 87:
             case 83:
-                  platform2.setVelocity(0);
+                  platformL.setVelocity(0);
                   break;
         }
         
@@ -30,18 +30,18 @@ var key = function(){
           switch(e.keyCode){
             //Spelare 1
             case 38:
-                  platform1.setVelocity(-speedConstant);
+                  platformR.setVelocity(-speedConstant);
                   break;
             case 40:
-                  platform1.setVelocity(speedConstant);
+                  platformR.setVelocity(speedConstant);
                   break;
             
             //Spelare 2:
             case 87:
-                  platform2.setVelocity(-speedConstant);
+                  platformL.setVelocity(-speedConstant);
                   break;
             case 83:
-                  platform2.setVelocity(speedConstant);
+                  platformL.setVelocity(speedConstant);
                   break;
           }
         console.log("down " + e.keyCode);

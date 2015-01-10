@@ -1,8 +1,8 @@
 //Settings:
 var backgroundColor = "#000000";
 var elementColor = "#FFFFFF";
-var initialBallSpeed = 20; //How many px should we move per frame?
-var randomV = Math.random() * (Math.PI * 2);
+var initialBallSpeed = 10; //How many px should we move per frame?
+var randomV = Math.random() * (Math.PI/2) - Math.PI/4;
 
 var initialBallK = Math.tan(randomV);
 
@@ -188,65 +188,94 @@ Platform.prototype.move = function(){
 }
 Platform.prototype.checkHitWithBall = function(ball){
     var x = ball.x;
-    var to = x + ball.width;
-    
     var oldX = ball.oldX;
-    var oldTo = oldX + ball.width;
     
-    var smallestX = Math.min(x, oldX);
-    var largestX = Math.max(x,oldX);
+    var line1 = this.x - ball.width;
+    var line2 = this.x + this.width;
     
-    // Has it passed one of the lines? 
-    if(smallestX<)
+    var smallest = Math.min(x, oldX);
+    var largest = Math.max(x, oldX);
 }
 
 var start = null;
 var ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
 
-var platform1 = new Platform(
+var platformR = new Platform(
     100,             // Height
     10,             // Width
-    30,             // StartX: 30px from right edge of canvas
-    height/2-50,    // Start in the middle on y-axis
+    canvas.width - 40,             // StartX: 30px from right edge of canvas
+    height/2 - 50,    // Start in the middle on y-axis
     canvas.height   // Only let it move so that we don't go outside of canvas
 );
 
-var platform2 = new Platform(
-    30,                 // Height
+var platformL = new Platform(
+    100,                 // Height
     10,                 // Width
-    canvas.width - 40,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
-    height/2-15,        // Start in the middle on y-axis
+    30,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
+    height/2-50,        // Start in the middle on y-axis
     canvas.height       // Only let it move so that we don't go outside of canvas)
 );
 
-var platforms = [platform1, platform2];
-platform1.setVelocity(0);
-platform2.setVelocity(0);
+var platforms = [platformR, platformL];
+platformR.setVelocity(0);
+platformL.setVelocity(0);
 var running = true;
 var step = function(timestamp){
-    ball.draw(ctx);
-    ball.move();  
-    
-    // Move platforms and check if ball has hit platform
-    
-    /*platform1.draw(ctx);
-    platform1.move();
-    
-    platform2.draw(ctx);
-    platform2.move();*/
     for(var i = 0; i < platforms.length; i++){
+        platforms[i].move();
         platforms[i].draw(ctx);
-        platforms[i].move()
-        
-        platforms[i].checkHitWithBall(ball);
     }
     
-    if(running) window.requestAnimationFrame(step);
+    var bouncyOnPlatform = function(platform,ball){
+        var gradperl = Math.PI/2 / platform.height;
+        
+        var l = -(platform.y + platform.height/ 2 - ball.centerY);
+        
+        var grad = gradperl * l;
+        
+        var k = Math.tan(grad);
+        
+        var changeDir = 0;
+        if(ball.dX > 0){ 
+            changeDir = -1
+        }
+        else {
+            changeDir = 1;
+        }
+        
+        ball.setK(k);
+        ball.dX = ball.dX * changeDir;
+    }
+    
+    // Check for hits with ball
+    var rightBound = platformR.x;
+    var leftBound = platformL.x + platformL.width;
+    
+    // Hit with left platform
+    if(ball.x < leftBound && ball.dX < 0){
+        // change direction
+        
+        if(ball.y + ball.height > platformL.y && ball.y < platformL.y + platformL.height){
+            bouncyOnPlatform(platformL, ball);
+        }
+    }
+    
+    // Hit with right platform
+    if((ball.x + ball.width) > rightBound && ball.dX > 0){
+        if(ball.y + ball.height > platformR.y && ball.y < platformR.y + platformR.height){
+            bouncyOnPlatform(platformR, ball);
+        }
+    }
+    
+    
+    ball.move();
+    ball.draw(ctx);
+      
     
     //Very advanced system for detection of winner. Please be careful when you
     //uncomment this. It could lead to a broken toe, or worse, a 
     //pinple on your elbow. Please uncomment with cuation. 
-    /*
+    
     if(ball.centerX <= 0){
         alert("alliansen vann!")
         running = false;
@@ -254,6 +283,7 @@ var step = function(timestamp){
     if(ball.centerX >= ball.boundX){
         alert("Lefty vann!");
         running = false;
-    }*/
+    }
+    if(running) window.requestAnimationFrame(step);
 };
 window.requestAnimationFrame(step);
