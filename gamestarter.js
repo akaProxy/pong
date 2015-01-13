@@ -31,36 +31,35 @@ var checkIfPlayable = function(){
     if(NUM_CONNECTED == 3){
         startBtn.style.opacity = 1;
         startBtn.style.cursor = "pointer";
-        startBtn.onclick = startGameFunction();
+        startBtn.onclick = startGameFunction;
     }
-}
-startBtn.onclick=function(){
-    startGameFunction();
 }
 
 var ws = new WebSocket(WS_START + ip + ":" + port);
 ws.addEventListener("open", function(event){
     NUM_CONNECTED++
-    startBtn.style.opacity = 1;
+    checkIfPlayable();
+    littleConsole.innerHTML = "Connected to websocket!";
 });
 
 ws.addEventListener("message", function(event){
-    if(event.message == portP1 + " " + connectMessage){
+    console.log(event.data);
+    if(event.data == portP1 + " " + connectMsg){
         p1Text.innerHTML = "P1 Connected!";
         NUM_CONNECTED++;
         checkIfPlayable();
     }
-    else if(event.message == portP2 + " " + connectMessage){
+    else if(event.data == portP2 + " " + connectMsg){
         p2Text.innerHTML = "P2 Connected!";
         NUM_CONNECTED++;
         checkIfPlayable();
     }
-    else if(/\d{4} \d{0,}[.]\d{0,}/.test(event.message)){
+    else if((/\d{4} .\d*\.\d*/g).test(event.data)){
         // First get first four digits
-        var inPort = /\d{4}/.match(event.message);
-        var angle = event.message.substring((inPort + " ").length);
+        var inPort = parseInt(event.data.substring(0,4));
+        var angle = parseFloat(event.data.substring((inPort + " ").length));
         
-        var speedRad = 20/(Math.PI/2);
+        var speedRad = 20/(90);
         
         var speed = angle * speedRad;
         

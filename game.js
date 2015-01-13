@@ -213,7 +213,7 @@ var init = function(){
     
     var start = null;
     ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
-    ball.k = initialBallK;
+    ball.k = 0;
     
     platformR = new Platform(
         100,             // Height
