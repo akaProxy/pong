@@ -2,23 +2,19 @@
 var backgroundColor = "#000000";
 var elementColor = "#FFFFFF";
 var initialBallSpeed = 10; //How many px should we move per frame?
-var randomV = Math.random() * (Math.PI/2) - Math.PI/4;
+var randomV = null;
 
-var initialBallK = Math.tan(randomV);
+var initialBallK = null;
 
-var canvas = document.getElementById("arena");
+var canvas = null;
 var height = window.innerHeight;
 var width = window.innerWidth;
 
 //canvas.style.backgroundColor = "#000000";
 document.getElementsByName("body").height = height;
-canvas.height = height;
-canvas.width = width;
 
-var ctx = canvas.getContext("2d");
 
-//Draw backgroucanvasDrawerctx.fillStyle = backgroundColor;
-ctx.fillRect(0,0,canvas.width, canvas.height);
+var ctx = null;
 
 var Ball = function(height, width, startX, startY, boundX, boundY){
     this.color = elementColor;
@@ -197,29 +193,49 @@ Platform.prototype.checkHitWithBall = function(ball){
     var largest = Math.max(x, oldX);
 }
 
-var start = null;
-var ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
+var ball = null;
+var platformR = null;
+var platformL = null;
+var platforms = null;
+var running = false;
 
-var platformR = new Platform(
-    100,             // Height
-    10,             // Width
-    canvas.width - 40,             // StartX: 30px from right edge of canvas
-    height/2 - 50,    // Start in the middle on y-axis
-    canvas.height   // Only let it move so that we don't go outside of canvas
-);
+var init = function(){
+    randomV = Math.random() * (Math.PI/2) - Math.PI/4;
+    initialBallK = Math.tan(randomV);
+    
+    
+    canvas = document.getElementById("arena");
+    canvas.height = height;
+    canvas.width = width;
+    ctx = canvas.getContext("2d");
+    //Draw backgroucanvasDrawerctx.fillStyle = backgroundColor;
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+    
+    var start = null;
+    ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
+    ball.k = initialBallK;
+    
+    platformR = new Platform(
+        100,             // Height
+        10,             // Width
+        canvas.width - 40,             // StartX: 30px from right edge of canvas
+        height/2 - 50,    // Start in the middle on y-axis
+        canvas.height   // Only let it move so that we don't go outside of canvas
+    );
 
-var platformL = new Platform(
-    100,                 // Height
-    10,                 // Width
-    30,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
-    height/2-50,        // Start in the middle on y-axis
-    canvas.height       // Only let it move so that we don't go outside of canvas)
-);
+    platformL = new Platform(
+        100,                 // Height
+        10,                 // Width
+        30,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
+        height/2-50,        // Start in the middle on y-axis
+        canvas.height       // Only let it move so that we don't go outside of canvas)
+    );
 
-var platforms = [platformR, platformL];
-platformR.setVelocity(0);
-platformL.setVelocity(0);
-var running = true;
+    platforms = [platformR, platformL];
+    platformR.setVelocity(0);
+    platformL.setVelocity(0);
+    running = true;
+}
 var step = function(timestamp){
     for(var i = 0; i < platforms.length; i++){
         platforms[i].move();
@@ -272,18 +288,26 @@ var step = function(timestamp){
     ball.draw(ctx);
       
     
-    //Very advanced system for detection of winner. Please be careful when you
-    //uncomment this. It could lead to a broken toe, or worse, a 
-    //pinple on your elbow. Please uncomment with cuation. 
+    // Very advanced system for detection of winner. Please be careful when you
+    // uncomment this. It could lead to a broken toe, or worse, a 
+    // pinple on your elbow. Please uncomment with cuation. 
+    
+    
     
     if(ball.centerX <= 0){
         alert("alliansen vann!")
         running = false;
+        init();
     }
     if(ball.centerX >= ball.boundX){
         alert("Lefty vann!");
         running = false;
+        init();
     }
     if(running) window.requestAnimationFrame(step);
 };
-window.requestAnimationFrame(step);
+
+var startGame = function(){
+    init();
+    window.requestAnimationFrame(step);
+}

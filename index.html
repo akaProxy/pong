@@ -5,10 +5,27 @@
         <meta charset="utf-8">
         <title>PONG!!</title>
     </head>
-    <body>
-        <canvas id="arena"></canvas>
-        <p id="test"></p>
+    <body id="body">
+        <!--<canvas id="arena"></canvas>-->
+        <div id="background" style="height:100%;width:100%;background:black;">
+            <span class="logo">PONG</span>
+            <br>
+            
+            <div class="qrHolder">
+                <div id="qr1" class="qrCode"></div><br>
+                <span id="p1">Spelare 1</span>
+            </div>
+            
+            <div class="qrHolder">
+                <div id="qr2" class="qrCode"></div><br>
+                <span id="p2">Spelare 2</span>
+            </div>
+            <p id="littleConsole">Connecting to websocket...</p>
+            <span id="notes">Gjord av aka.Proxy.<br><u>Github</u></span>
+            <div id="startBtn">STARTA</div>
+        </div>
         <script type="text/javascript" src="game.js"></script>
         <script type="text/javascript" src="keymaster.js"></script>
+        <script type="text/javascript" src="gamestarter.js"></script>
     </body>
 </html>
