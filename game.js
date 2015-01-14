@@ -1,24 +1,20 @@
-
 //Settings:
 var backgroundColor = "#000000";
 var elementColor = "#FFFFFF";
-var initialBallSpeed = 20; //How many px should we move per frame?
-var initialBallK = 3;
+var initialBallSpeed = 10; //How many px should we move per frame?
+var randomV = null;
 
+var initialBallK = null;
 
-var canvas = document.getElementById("arena");
+var canvas = null;
 var height = window.innerHeight;
 var width = window.innerWidth;
 
 //canvas.style.backgroundColor = "#000000";
 document.getElementsByName("body").height = height;
-canvas.height = height;
-canvas.width = width;
 
-var ctx = canvas.getContext("2d");
 
-//Draw backgroucanvasDrawerctx.fillStyle = backgroundColor;
-ctx.fillRect(0,0,canvas.width, canvas.height);
+var ctx = null;
 
 var Ball = function(height, width, startX, startY, boundX, boundY){
     this.color = elementColor;
@@ -48,7 +44,6 @@ var Ball = function(height, width, startX, startY, boundX, boundY){
     this.boundX = boundX;
     this.boundY = boundY;
 };
-
 Ball.prototype.draw = function(canvasDrawer){
     //first clear the ball
     canvasDrawer.fillStyle = backgroundColor;
@@ -150,27 +145,169 @@ Ball.prototype.setK = function(inK){
     this.k = inK;
     this.calculatedXdY();
 };
-var start = null;
-var ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
 
-var running = true;
+var Platform = function(height, width, startX, startY, boundY){
+    // This ball will be used to check if we have hit the ball and after that change it's coordinates. 
+    //this.balls = balls; //Maybe we will have multiple balls in the future...
+    
+    this.color = elementColor;
+    this.height = parseInt(height);
+    this.width = parseInt(width);
+    
+    //Where is the platform?
+    this.x = startX;
+    this.y = startY;
+    
+    //Not moving until we set a speed. Positive or negative value depending if we want to move up or down. 
+    this.velocity = 0;
+    
+    //Just like the ball, except we only can move up or down.
+    this.oldY = null;
+    this.boundY = boundY;
+};
+Platform.prototype.setVelocity = function(velocity){
+    this.velocity = velocity;
+}
+Platform.prototype.draw = function(canvasDrawer){
+    canvasDrawer.fillStyle = backgroundColor;
+    canvasDrawer.fillRect(parseInt(this.x), parseInt(this.oldY), this.width, this.height);
+    
+    canvasDrawer.fillStyle = this.color;
+    canvasDrawer.fillRect(parseInt(this.x), parseInt(this.y), this.width, this.height);
+}
+Platform.prototype.move = function(){
+    //Move if we are in bound
+    if((this.y > 0 && this.velocity < 0)||((this.y + this.height) < this.boundY && this.velocity > 0)){
+        this.oldY = this.y;
+        this.y = this.y + this.velocity
+    };
+}
+Platform.prototype.checkHitWithBall = function(ball){
+    var x = ball.x;
+    var oldX = ball.oldX;
+    
+    var line1 = this.x - ball.width;
+    var line2 = this.x + this.width;
+    
+    var smallest = Math.min(x, oldX);
+    var largest = Math.max(x, oldX);
+}
+
+var ball = null;
+var platformR = null;
+var platformL = null;
+var platforms = null;
+var running = false;
+
+var init = function(){
+    randomV = Math.random() * (Math.PI/2) - Math.PI/4;
+    initialBallK = Math.tan(randomV);
+    
+    
+    canvas = document.getElementById("arena");
+    canvas.height = height;
+    canvas.width = width;
+    ctx = canvas.getContext("2d");
+    //Draw backgroucanvasDrawerctx.fillStyle = backgroundColor;
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+    
+    var start = null;
+    ball = new Ball(10, 10, width/2 - 5, height/2-5, canvas.width, canvas.height);
+    ball.k = 0;
+    
+    platformR = new Platform(
+        100,             // Height
+        10,             // Width
+        canvas.width - 40,             // StartX: 30px from right edge of canvas
+        height/2 - 50,    // Start in the middle on y-axis
+        canvas.height   // Only let it move so that we don't go outside of canvas
+    );
+
+    platformL = new Platform(
+        100,                 // Height
+        10,                 // Width
+        30,  // StartX: 30px (becomes 40px, because we need to count in the width of the platform) from left edge of canvas
+        height/2-50,        // Start in the middle on y-axis
+        canvas.height       // Only let it move so that we don't go outside of canvas)
+    );
+
+    platforms = [platformR, platformL];
+    platformR.setVelocity(0);
+    platformL.setVelocity(0);
+    running = true;
+}
 var step = function(timestamp){
-    ball.draw(ctx);
+    for(var i = 0; i < platforms.length; i++){
+        platforms[i].move();
+        platforms[i].draw(ctx);
+    }
+    
+    var bouncyOnPlatform = function(platform,ball){
+        var gradperl = Math.PI/2 / platform.height;
+        
+        var l = -(platform.y + platform.height/ 2 - ball.centerY);
+        
+        var grad = gradperl * l;
+        
+        var k = Math.tan(grad);
+        
+        var changeDir = 0;
+        if(ball.dX > 0){ 
+            changeDir = -1
+        }
+        else {
+            changeDir = 1;
+        }
+        
+        ball.setK(k);
+        ball.dX = ball.dX * changeDir;
+    }
+    
+    // Check for hits with ball
+    var rightBound = platformR.x;
+    var leftBound = platformL.x + platformL.width;
+    
+    // Hit with left platform
+    if(ball.x < leftBound && ball.dX < 0){
+        // change direction
+        
+        if(ball.y + ball.height > platformL.y && ball.y < platformL.y + platformL.height){
+            bouncyOnPlatform(platformL, ball);
+        }
+    }
+    
+    // Hit with right platform
+    if((ball.x + ball.width) > rightBound && ball.dX > 0){
+        if(ball.y + ball.height > platformR.y && ball.y < platformR.y + platformR.height){
+            bouncyOnPlatform(platformR, ball);
+        }
+    }
+    
+    
     ball.move();
+    ball.draw(ctx);
+      
     
-    if(running) window.requestAnimationFrame(step);
+    // Very advanced system for detection of winner. Please be careful when you
+    // uncomment this. It could lead to a broken toe, or worse, a 
+    // pinple on your elbow. Please uncomment with cuation. 
     
-    //Very advanced system for detection of winner. Please be careful when you
-    //uncomment this. It could lead to a broken toe, or worse, a 
-    //pinple on your elbow. Please uncomment with cuation. 
     
-    /*if(ball.centerX <= 0){
+    
+    if(ball.centerX <= 0){
         alert("alliansen vann!")
         running = false;
+        init();
     }
     if(ball.centerX >= ball.boundX){
         alert("Lefty vann!");
         running = false;
-    }*/
+        init();
+    }
+    if(running) window.requestAnimationFrame(step);
 };
-window.requestAnimationFrame(step);
+
+var startGame = function(){
+    init();
+    window.requestAnimationFrame(step);
+}

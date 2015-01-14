@@ -1,8 +1,17 @@
+@font-face{
+    font-family: "8bit";
+    src: url(slkscr.ttf);
+}
 html, body {
     padding: 0;
     margin: 0;
     overflow: hidden;
     height: 100%;
+    font-family: "8bit";
+    color:white;
+}
+body{
+    min-height: 100%;
 }
 
 #arena {
@@ -11,4 +20,60 @@ html, body {
     background: blue;
     width: 50px;
     position: relative;
+}
+#background {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+#background > h1 {
+    font-family: "8bit";
+    margin: 0;
+    font-size: 10em; 
+    text-align: center;
+}
+.logo {
+    display: inline-block;
+    margin-top: 0.5em;
+    color:white;
+    font-family: "8bit";
+    font-size: 10em;   
+    vertical-align: bottom;
+}
+.qrCode {
+    height: 10em;
+    width: 10em;
+    margin: 30px;
+    display: inline-block;
+    background: white;
+    color:white;
+}
+.qrHolder > span {
+    color: white;
+    font-family: "8bit";
+}
+.qrHolder {
+    text-align: center;
+    display: inline-block;
+}
+#littleConsole {
+    padding-top: 3em;
+}
+#notes {
+    display: inline-block;
+    text-align: right;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    padding: 1em;
+    cursor:pointer;
+}
+#startBtn {
+    border: 0.3em solid white;
+    display: inline-block;
+    margin-top: 3em;
+    padding: 1em;
+    opacity: 0.1;
 }
