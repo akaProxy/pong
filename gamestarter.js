@@ -3,7 +3,7 @@
 var port = 1337;
 var portP1 = 1338;
 var portP2 = 1339;
-var ip = "192.168.0.254";
+var ip = "192.168.0.102";
 var WS_START = "ws://";
 var connectMsg = "connected";
 
@@ -18,6 +18,25 @@ var p1Text = document.getElementById("p1");
 var p2Text = document.getElementById("p2");
 var littleConsole = document.getElementById("littleConsole");
 var everything = document.getElementById("background");
+var qr1dim = document.getElementById("qr1").getBoundingClientRect();
+var qr2dim = document.getElementById("qr2").getBoundingClientRect();
+
+
+new QRCode("qr1", {
+    text: WS_START+ip+":"+portP1,
+    width: qr1dim.width - 6,
+    height: qr1dim.height - 6,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.L});
+new QRCode("qr2", {
+    text: WS_START+ip+":"+portP2,
+    width: qr2dim.width - 6,
+    height: qr2dim.height - 6,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.L});
+
 
 var startGameFunction = function(){
     document.getElementById("body").removeChild(everything);
