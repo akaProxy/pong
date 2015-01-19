@@ -38,14 +38,21 @@ var checkIfPlayable = function(){
     }
 }
 
-var start = (function(){
+var wsFailed;
+var start = function(){
+    wsFailed=false;
+    littleConsole.textContent = "Connecting to websocket...";
+    littleConsole.classList.remove('fail');
+    
     var conectionError = function(){
         var tries = 0;
         return function(exeption){
             console.warn("connection failed");
             if(++tries>=RETRIES){
                 //well, this is not gonna work...
-                littleConsole.innerHTML = "Failed to connect to websocket :(";
+                wsFailed=true;
+                littleConsole.textContent = "Failed to connect to websocket :(";
+                littleConsole.classList.add('fail');
                 alert(RETRY_FAIL_MSG);
             }else{
                 //catch failed do the try again
@@ -64,18 +71,18 @@ var start = (function(){
             
             NUM_CONNECTED++
             checkIfPlayable();
-            littleConsole.innerHTML = "Connected to websocket!";
+            littleConsole.textContent = "Connected to websocket!";
         });
 
         ws.addEventListener("message", function(event){
             console.log(event.data);
             if(event.data == portP1 + " " + connectMsg){
-                p1Text.innerHTML = "P1 Connected!";
+                p1Text.textContent = "P1 Connected!";
                 NUM_CONNECTED++;
                 checkIfPlayable();
             }
             else if(event.data == portP2 + " " + connectMsg){
-                p2Text.innerHTML = "P2 Connected!";
+                p2Text.textContent = "P2 Connected!";
                 NUM_CONNECTED++;
                 checkIfPlayable();
             }
@@ -100,4 +107,8 @@ var start = (function(){
         });
     };
     openWS();
-})();
+};
+start();
+document.getElementById("littleConsole").addEventListener('click',function(){
+    if(wsFailed)start();
+});
