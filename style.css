@@ -3,6 +3,14 @@
     src: url(slkscr.ttf);
 }
 html, body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    
     padding: 0;
     margin: 0;
     overflow: hidden;
@@ -61,14 +69,33 @@ body{
 #littleConsole {
     padding-top: 3em;
 }
-#notes {
+#credits {
+    /*make hooverable area greater*/
+    padding: 5em 1em 1em 5em;
     display: inline-block;
     text-align: right;
     position: absolute;
     bottom: 0px;
     right: 0px;
-    padding: 1em;
-    cursor:pointer;
+}
+#credits a {
+    cursor: auto;
+    color: inherit;
+    text-decoration: none;
+}
+.hiding {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: -3em;
+    height: 2em;
+    
+    -webkit-transition: margin-bottom .5s ease-in;
+    transition: margin-bottom .5s ease-in;
+}
+#credits:hover .hiding {
+    margin-bottom: 0em;
+    -webkit-transition: margin-bottom .5s ease-out;
+    transition: margin-bottom .5s ease-out;
 }
 #startBtn {
     border: 0.3em solid white;
