@@ -118,7 +118,7 @@ Ball.prototype.move = function(){
         
         //TODO: Check for a hit with platform
     }
-    if (!this.dX || !this.dY) this.calculatedXdY();
+    if ((this.dY == null) || (this.dY == null)) this.calculatedXdY();
     
     this.oldX = this.x;
     this.oldY = this.y;    
