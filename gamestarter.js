@@ -3,7 +3,7 @@
 var port = 1337;
 var portP1 = 1338;
 var portP2 = 1339;
-var ip = "192.168.0.102";
+var ip = "localhost";
 var WS_START = "ws://";
 var connectMsg = "connected";
 
